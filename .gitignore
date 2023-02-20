@@ -3,3 +3,4 @@
 *.db
 __pycache
 site_packages
+venv
