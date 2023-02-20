@@ -1,0 +1,21 @@
+<h1>Yet Another Todo - Ugly Legacy Admin Page Edition</h1>
+<table>
+    <thead>
+        <tr>
+            <td>User</td>
+            <td>Task</td>
+            <td>Completed</td>
+            <td>Actions</td>
+        </tr>
+    </thead>
+    <tbody>
+        {% for record in data %}
+            <tr>
+                <td>{{record[0]}}</td>
+                <td>{{record[2]}}</td>
+                <td>{{record[3]}}</td>
+                <td><form method="post" action="/admin/legacy"><input type='hidden' name='id' value="{{record[1]}}" /><input type="submit" value="Complete" /></form></td>
+            </tr>
+            {% endfor %}
+    </tbody>
+</table>

@@ -1,0 +1,9 @@
+flask
+python-dotenv
+db-sqlite3
+apiflask
+flask
+flask-azure-oauth
+watchdog
+requests
+jsonpickle
