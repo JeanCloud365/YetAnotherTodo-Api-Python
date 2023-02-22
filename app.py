@@ -32,7 +32,6 @@ app.security_schemes = {  # equals to use config SECURITY_SCHEMES
       'flows':{
         'implicit':{
             'authorizationUrl':'https://login.microsoftonline.com/21bd23b0-751d-4a22-8367-6a57ecd77b49/oauth2/v2.0/authorize',
-            'client_id':'4b2b7ae1-da3d-40c5-888e-b4d2eefc1604',
             'scopes':{'api://709a97a6-fffc-43f5-8020-64925fc69760/impersonate':'user scope'}
         }
       }
@@ -40,7 +39,7 @@ app.security_schemes = {  # equals to use config SECURITY_SCHEMES
 }
 app.servers = [
     {
-        'name': 'Production Server',
+        'description': 'Production Server',
         'url': f"{os.environ.get('base_url')}"
     }
 ]
@@ -279,8 +278,8 @@ def create_task(description:str)->Task:
     webhooks = db_get_user_webhook(user.id,'created')
     for webhook in webhooks:
         try:
-          data = jsonpickle.encode(task,unpicklable=True)
-          requests.post(webhook.url,data)
+          data = jsonpickle.encode(task[0],unpicklable=True)
+          requests.post(webhook.url,data,headers={'Content-Type':'application/json'})
           print(f"Task Creation Webhook Sent To : {webhook.url}. Payload: {data}")
         except Exception as e:
             print(f"Task Creation Webhook Failed For : {webhook.url}. Error: {e}. Payload: {data}")
@@ -294,8 +293,8 @@ def complete_task(id:str):
     webhooks = db_get_user_webhook(user.id,'completed')
     for webhook in webhooks:
         try:
-          data = jsonpickle.encode(task)
-          requests.post(webhook.url,jsonpickle.encode(data,unpicklable=True))
+          data = jsonpickle.encode(task[0])
+          requests.post(webhook.url,data,headers={'Content-Type':'application/json'})
           print(f"Task Completion Webhook Sent To : {webhook.url}. Payload: {data}")
         except Exception as e:
             print(f"Task Completion Webhook Failed For : {webhook.url}. Error: {e}. Payload: {data}")
@@ -343,15 +342,20 @@ def api_complete_task(task):
 @app.get('/admin/user')
 @app.doc(security='OAuth2',summary='List users (admin)',operation_id='admin_user',description='List users as an admin')
 @app.output(UserQuery)
+@auth()
 def api_admin_users():
-    return {'value':list_admin_users()},'200'
+    data = list_admin_users()
+    print(data)
+    return {'value':data}
 
 @app.get('/admin/task')
 @app.doc(security='OAuth2',summary='List tasks (admin)',operation_id='admin_task',description='List tasks as an admin')
 @app.output(TaskQuery)
 @auth()
 def api_admin_tasks():
-    return {'value': list_admin_tasks()},'200'
+    data = list_admin_tasks()
+    print(data)
+    return {'value': data}
 
 @app.post('/webhook')
 @app.doc(security='OAuth2',summary='Create webhook',operation_id='create_webhook',description='Create Webhook')
