@@ -172,7 +172,7 @@ def db_get_external_user(external_id:String):
     rows = result.fetchall()
     return [User(*row) for row in rows]
 
-def db_list_all_users(external_id:String):
+def db_list_all_users():
     db = db_get_db()
     cursor = db.cursor()
     result = cursor.execute(f"select * from user")
@@ -308,7 +308,7 @@ def list_admin_tasks()->t.List[Task]:
     return db_list_all_tasks()
 def list_admin_users()->t.List[User]:
     user = get_or_create_user()
-    return db_list_all_users
+    return db_list_all_users()
 def create_webhook(type:str,url:str):
     user = get_or_create_user()
     return db_create_user_webhook(url=url,user=user.id,type=type)
